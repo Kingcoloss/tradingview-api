@@ -13,24 +13,20 @@ jobs:
   Tests:
     runs-on: ubuntu-latest
 
-    strategy:
-      # TradingView authenticated tests use the same account/session secrets.
-      # Running every Node matrix job at once makes the external websocket tests flaky.
-      max-parallel: 1
-      matrix:
-        node-version: [14.x, 18.x, 19.x]
+    # TradingView authenticated tests use the same account/session secrets.
+    # Running every job at once makes the external websocket tests flaky.
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: false
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+    - uses: actions/checkout@v4
+    - name: Use Bun
+      uses: oven-sh/setup-bun@v2
     - name: Install dependencies
-      run: npm ci
+      run: bun install --frozen-lockfile
     - name: Run tests
-      run: npm test -- --run
+      run: bun test
       env:
         SESSION: ${{ secrets.TW_SESSION }}
         SIGNATURE: ${{ secrets.TW_SIGNATURE }}

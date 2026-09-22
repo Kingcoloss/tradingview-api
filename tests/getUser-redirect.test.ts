@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 
 describe('getUser redirect protection', () => {
   it('should not loop infinitely on repeated redirects', async () => {

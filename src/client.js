@@ -1,5 +1,3 @@
-const WebSocket = require('ws');
-
 const misc = require('./miscRequests');
 const protocol = require('./protocol');
 
@@ -47,7 +45,7 @@ module.exports = class Client {
 
   /** If the cient was closed */
   get isOpen() {
-    return this.#ws.readyState === this.#ws.OPEN;
+    return this.#ws.readyState === WebSocket.OPEN;
   }
 
   /** @type {SessionList} */
@@ -238,8 +236,11 @@ module.exports = class Client {
     };
 
     this.#ws = new WebSocket(`wss://${server}.tradingview.com/socket.io/websocket?from=chart&type=chart`, {
-      origin: 'https://www.tradingview.com',
-      headers: { ...defaultHeaders, ...clientOptions.headers },
+      headers: {
+        Origin: 'https://www.tradingview.com',
+        ...defaultHeaders,
+        ...clientOptions.headers,
+      },
     });
 
     if (clientOptions.token) {
@@ -266,21 +267,21 @@ module.exports = class Client {
       this.sendQueue();
     }
 
-    this.#ws.on('open', () => {
+    this.#ws.addEventListener('open', () => {
       this.#handleEvent('connected');
       this.sendQueue();
     });
 
-    this.#ws.on('close', () => {
+    this.#ws.addEventListener('close', () => {
       this.#logged = false;
       this.#handleEvent('disconnected');
     });
 
-    this.#ws.on('error', (err) => {
-      this.#handleError('WebSocket error:', err.message);
+    this.#ws.addEventListener('error', (err) => {
+      this.#handleError('WebSocket', err.message);
     });
 
-    this.#ws.on('message', (data) => this.#parsePacket(data));
+    this.#ws.addEventListener('message', (event) => this.#parsePacket(event.data));
   }
 
   /** @type {ClientBridge} */

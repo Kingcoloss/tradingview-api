@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import { searchMarket, searchIndicator, searchMarketV3 } from '../main';
 
 describe('Search functions', () => {

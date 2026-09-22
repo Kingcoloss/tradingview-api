@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import TradingView from '../main';
 import utils from './utils';
 
