@@ -6,7 +6,9 @@
   "scripts": {
     "test": "bun test",
     "example": "bun run",
-    "example:dev": "bun --watch run"
+    "example:dev": "bun --watch run",
+    "pack:bundle": "bun build --minify --outfile=dist/tradingviewapi.bundle.js main.js",
+    "pack:bun": "bun build --minify --target=bun --outfile=dist/tradingviewapi.bun.js main.js"
   },
   "repository": {
     "type": "git",

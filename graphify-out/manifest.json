@@ -1,0 +1,174 @@
+{
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/vite.config.js": {
+    "mtime": 1789695882.2934535,
+    "hash": "c292d2ee2b09b694d72e77751453a03c"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/main.js": {
+    "mtime": 1789695882.289654,
+    "hash": "e25502c40f7d8d76450890caf0ad8675"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/simpleChart.test.ts": {
+    "mtime": 1789695882.293309,
+    "hash": "4564b08f7658aa73e91863ff5bd46a63"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/allErrors.test.ts": {
+    "mtime": 1789695882.2923758,
+    "hash": "69e375bd805abe641bddaa658441a8a3"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/replayMode.test.ts": {
+    "mtime": 1789695882.2931478,
+    "hash": "dbaba4b65b27ef2b6447a761bc582d90"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/utils.ts": {
+    "mtime": 1789695882.2933857,
+    "hash": "4a13d0d4c3ca12ac086b748dbb682503"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/indicators.test.ts": {
+    "mtime": 1789695882.292977,
+    "hash": "1745ba89cc60d5bc2336a39a9094994e"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/search.test.ts": {
+    "mtime": 1789695882.2932231,
+    "hash": "9d48d002aaa04336cb1b31bd30b57a95"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/customChartTypes.test.ts": {
+    "mtime": 1789695882.2927003,
+    "hash": "56bf4e3fbba6406474a6ff6bb53b5a13"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/quoteSession.test.ts": {
+    "mtime": 1789695882.2930653,
+    "hash": "a1c29129dad7e2164c2dbecb32852657"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/authenticated.test.ts": {
+    "mtime": 1789695882.2924767,
+    "hash": "ea85e344a27346c8e738f68478e1fc33"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/builtInIndicator.test.ts": {
+    "mtime": 1789695882.2925532,
+    "hash": "92c1112c4bf75b269183d0a8f062cfcb"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/tests/getUser-redirect.test.ts": {
+    "mtime": 1789695882.2928097,
+    "hash": "4104319d009060a73cbc8e6617a45822"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/BuiltInIndicator.js": {
+    "mtime": 1789695882.2882934,
+    "hash": "9ac1b66f4abf94ae41d0d03b337291da"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/UserLogin.js": {
+    "mtime": 1789695882.2895653,
+    "hash": "eddd7aa32e429b680ea2beebd640d001"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/SimpleChart.js": {
+    "mtime": 1789695882.2894928,
+    "hash": "7e69c98875f4cea54ca9f5b4300a5d20"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/MultipleSyncFetch.js": {
+    "mtime": 1789695882.2891574,
+    "hash": "b75435ce3446d06ea79219e786c10dc5"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/CustomTimeframe.js": {
+    "mtime": 1789695882.2885356,
+    "hash": "5e2e58b1735afa2fd46312807f5a2a1d"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/AllPrivateIndicators.js": {
+    "mtime": 1789695882.2880366,
+    "hash": "13b631247e5fcd13f0df5b235b2b23b5"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/CustomChartType.js": {
+    "mtime": 1789695882.2884352,
+    "hash": "25e439d06bb3b7802b0aece80b11e1ef"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/Errors.js": {
+    "mtime": 1789695882.2886999,
+    "hash": "e4cde021221c1722d5526a4895262fbf"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/FromToData.js": {
+    "mtime": 1789695882.2889106,
+    "hash": "05e9b6bd774b1a526cdcb6e056c1155c"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/FakeReplayMode.js": {
+    "mtime": 1789695882.2888281,
+    "hash": "79f4593b974a702218940c8ec5ab8f7c"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/ReplayMode.js": {
+    "mtime": 1789695882.2893157,
+    "hash": "8b5518c4820d762b5efdc5d30f77d98d"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/PinePermManage.js": {
+    "mtime": 1789695882.2892296,
+    "hash": "1b23aabbf7b690ecb6199a1d60b3b68e"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/Search.js": {
+    "mtime": 1789695882.2894173,
+    "hash": "e4c28c72fb0740008ec902e59ec5c92e"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/GraphicIndicator.js": {
+    "mtime": 1789695882.2890687,
+    "hash": "87f6144923567f3426c7a8469ba41c6f"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/examples/GetDrawings.js": {
+    "mtime": 1789695882.2889907,
+    "hash": "82380384a910e1bd556e7a30ecb5e7a4"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/protocol.js": {
+    "mtime": 1789695882.2916877,
+    "hash": "e744a1c4ef23cb69e57b5440a8a3d3b0"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/client.js": {
+    "mtime": 1789695882.2914426,
+    "hash": "7171c3b3c8702646d7b6dc57dc807796"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/types.js": {
+    "mtime": 1789695882.292084,
+    "hash": "02402d575e9c9f005b8026005ee13fd0"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/utils.js": {
+    "mtime": 1789695882.2921703,
+    "hash": "3fbb075ce24fb7c6c1d24a7b36bcb6fa"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/miscRequests.js": {
+    "mtime": 1789695882.291582,
+    "hash": "67f08504bea8736a04533b0e1dfc256c"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/quote/market.js": {
+    "mtime": 1789695882.2918339,
+    "hash": "427bf9980c3b571425534b1ee48aa937"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/quote/session.js": {
+    "mtime": 1789695882.2919905,
+    "hash": "4c5a7f8ff4dfc3a844e9fd2a7bf0fcf4"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/classes/BuiltInIndicator.js": {
+    "mtime": 1789695882.290969,
+    "hash": "8f32fe00201bde6a5d19cb1e714579a1"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/classes/PinePermManager.js": {
+    "mtime": 1789695882.2912354,
+    "hash": "1d47279764269e9f621f2e0c9507971e"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/classes/PineIndicator.js": {
+    "mtime": 1789695882.2910595,
+    "hash": "09f558bdfad82b5e61c804747096520c"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/chart/session.js": {
+    "mtime": 1789695882.290651,
+    "hash": "74bfb801ae8b336a21bff3fb1e971945"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/chart/study.js": {
+    "mtime": 1789695882.2908325,
+    "hash": "86cee8cafef9080799ae4cc05ff15ac7"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/src/chart/graphicParser.js": {
+    "mtime": 1789695882.2905478,
+    "hash": "ea754845b21801a34be2ce6cf1cd9db7"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/README.md": {
+    "mtime": 1789695882.2876205,
+    "hash": "b5aa0016565160823a95b60b18f3960a"
+  },
+  "/Users/kanganapong.s/Documents/Private/tradingview-api/docs/DOCS.md": {
+    "mtime": 1789695882.287731,
+    "hash": "f9296494f64d9f79e6a46d2fe8803313"
+  }
+}
