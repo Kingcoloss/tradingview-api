@@ -1,6 +1,6 @@
 const { genSessionID } = require('../utils');
 const { parseCompressed } = require('../protocol');
-const graphicParser = require('./graphicParser');
+const graphicParser = require('./graphicParser').default;
 
 const PineIndicator = require('../classes/PineIndicator');
 const BuiltInIndicator = require('../classes/BuiltInIndicator');
