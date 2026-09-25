@@ -8,7 +8,10 @@
     "example": "bun run",
     "example:dev": "bun --watch run",
     "pack:bundle": "bun build --minify --outfile=dist/tradingviewapi.bundle.js main.js",
-    "pack:bun": "bun build --minify --target=bun --outfile=dist/tradingviewapi.bun.js main.js"
+    "pack:bun": "bun build --minify --target=bun --outfile=dist/tradingviewapi.bun.js main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .js,.ts",
+    "build:types": "tsc -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",
@@ -34,10 +37,16 @@
     "jszip": "^3.7.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.15.7",
     "@mathieuc/console": "^1.0.1",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "bun-types": "^1.4.2",
     "eslint": "^7.25.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "@babel/eslint-parser": "^7.15.7"
+    "typescript": "^5.6.0"
   }
 }
