@@ -1,28 +1,25 @@
-const axios = require('axios');
-const { genAuthCookies } = require('../utils');
+import axios from 'axios';
+import { genAuthCookies } from '../utils';
 
-/**
- * @typedef {Object} AuthorizationUser
- * @prop {id} id User id
- * @prop {string} username User's username
- * @prop {string} userpic User's profile picture URL
- * @prop {string} expiration Authorization expiration date
- * @prop {string} created Authorization creation date
- */
+export interface AuthorizationUser {
+  id: string | number;
+  username: string;
+  userpic: string;
+  expiration: string;
+  created: string;
+}
 
-/** @class */
-class PinePermManager {
-  sessionId;
+type UserOrder = 'user__username' | '-user__username' | 'created' | '-created'
+  | 'expiration,user__username' | '-expiration,user__username';
 
-  pineId;
+export default class PinePermManager {
+  sessionId: string;
 
-  /**
-   * Creates a PinePermManager instance
-   * @param {string} sessionId Token from `sessionid` cookie
-   * @param {string} signature Signature cookie
-   * @param {string} pineId Indicator ID (Like: PUB;XXXXXXXXXXXXXXXXXXXXX)
-   */
-  constructor(sessionId, signature, pineId) {
+  signature: string;
+
+  pineId: string;
+
+  constructor(sessionId: string, signature: string, pineId: string) {
     if (!sessionId) throw new Error('Please provide a SessionID');
     if (!signature) throw new Error('Please provide a Signature');
     if (!pineId) throw new Error('Please provide a PineID');
@@ -31,18 +28,7 @@ class PinePermManager {
     this.pineId = pineId;
   }
 
-  /**
-   * Get list of authorized users
-   * @param {number} limit Fetching limit
-   * @param {'user__username'
-   * | '-user__username'
-   * | 'created' | 'created'
-   * | 'expiration,user__username'
-   * | '-expiration,user__username'
-   * } order Fetching order
-   * @returns {Promise<AuthorizationUser[]>}
-   */
-  async getUsers(limit = 10, order = '-created') {
+  async getUsers(limit = 10, order: UserOrder = '-created'): Promise<AuthorizationUser[]> {
     try {
       const { data } = await axios.post(
         `https://www.tradingview.com/pine_perm/list_users/?limit=${limit}&order_by=${order}`,
@@ -57,18 +43,12 @@ class PinePermManager {
       );
 
       return data.results;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail || 'Wrong credentials or pineId');
     }
   }
 
-  /**
-   * Adds an user to the authorized list
-   * @param {string} username User's username
-   * @param {Date} [expiration] Expiration date
-   * @returns {Promise<'ok' | 'exists' | null>}
-   */
-  async addUser(username, expiration = null) {
+  async addUser(username: string, expiration: Date | null = null): Promise<'ok' | 'exists' | null> {
     try {
       const { data } = await axios.post(
         'https://www.tradingview.com/pine_perm/add/',
@@ -91,18 +71,12 @@ class PinePermManager {
       );
 
       return data.status;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail || 'Wrong credentials or pineId');
     }
   }
 
-  /**
-   * Modify an authorization expiration date
-   * @param {string} username User's username
-   * @param {Date} [expiration] New expiration date
-   * @returns {Promise<'ok' | null>}
-   */
-  async modifyExpiration(username, expiration = null) {
+  async modifyExpiration(username: string, expiration: Date | null = null): Promise<'ok' | null> {
     try {
       const { data } = await axios.post(
         'https://www.tradingview.com/pine_perm/modify_user_expiration/',
@@ -125,17 +99,12 @@ class PinePermManager {
       );
 
       return data.status;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail || 'Wrong credentials or pineId');
     }
   }
 
-  /**
-   * Removes an user to the authorized list
-   * @param {string} username User's username
-   * @returns {Promise<'ok' | null>}
-   */
-  async removeUser(username) {
+  async removeUser(username: string): Promise<'ok' | null> {
     try {
       const { data } = await axios.post(
         'https://www.tradingview.com/pine_perm/remove/',
@@ -150,10 +119,8 @@ class PinePermManager {
       );
 
       return data.status;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail || 'Wrong credentials or pineId');
     }
   }
 }
-
-module.exports = PinePermManager;

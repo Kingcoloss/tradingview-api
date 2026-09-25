@@ -1,23 +1,18 @@
-/**
- * @typedef {'Volume@tv-basicstudies-241'
- *  | 'VbPFixed@tv-basicstudies-241'
- *  | 'VbPFixed@tv-basicstudies-241!'
- *  | 'VbPFixed@tv-volumebyprice-53!'
- *  | 'VbPSessions@tv-volumebyprice-53'
- *  | 'VbPSessionsRough@tv-volumebyprice-53!'
- *  | 'VbPSessionsDetailed@tv-volumebyprice-53!'
- *  | 'VbPVisible@tv-volumebyprice-53'} BuiltInIndicatorType Built-in indicator type
- */
+export type BuiltInIndicatorType = 'Volume@tv-basicstudies-241'
+  | 'VbPFixed@tv-basicstudies-241'
+  | 'VbPFixed@tv-basicstudies-241!'
+  | 'VbPFixed@tv-volumebyprice-53!'
+  | 'VbPSessions@tv-volumebyprice-53'
+  | 'VbPSessionsRough@tv-volumebyprice-53!'
+  | 'VbPSessionsDetailed@tv-volumebyprice-53!'
+  | 'VbPVisible@tv-volumebyprice-53';
 
-/**
- * @typedef {'rowsLayout' | 'rows' | 'volume'
- *  | 'vaVolume' | 'subscribeRealtime'
- *  | 'first_bar_time' | 'first_visible_bar_time'
- *  | 'last_bar_time' | 'last_visible_bar_time'
- *  | 'extendPocRight'} BuiltInIndicatorOption Built-in indicator Option
- */
+export type BuiltInIndicatorOption = 'rowsLayout' | 'rows' | 'volume'
+  | 'vaVolume' | 'subscribeRealtime' | 'first_bar_time'
+  | 'first_visible_bar_time' | 'last_bar_time' | 'last_visible_bar_time'
+  | 'extendPocRight';
 
-const defaultValues = {
+const defaultValues: Partial<Record<BuiltInIndicatorType, Record<string, unknown>>> = {
   'Volume@tv-basicstudies-241': {
     length: 20,
     col_prev_close: false,
@@ -80,58 +75,45 @@ const defaultValues = {
   },
 };
 
-/** @class */
-module.exports = class BuiltInIndicator {
-  /** @type {BuiltInIndicatorType} */
-  #type;
+export default class BuiltInIndicator {
+  #type: BuiltInIndicatorType;
 
-  /** @return {BuiltInIndicatorType} Indicator script */
-  get type() {
+  get type(): BuiltInIndicatorType {
     return this.#type;
   }
 
-  /** @type {Object<string, any>} */
-  #options = {};
+  #options: Record<string, unknown> = {};
 
-  /** @return {Object<string, any>} Indicator script */
-  get options() {
+  get options(): Record<string, unknown> {
     return this.#options;
   }
 
-  /**
-   * @param {BuiltInIndicatorType} type Buit-in indocator raw type
-   */
-  constructor(type = '') {
+  constructor(type: BuiltInIndicatorType | '' = '') {
     if (!type) throw new Error(`Wrong buit-in indicator type "${type}".`);
 
     this.#type = type;
     if (defaultValues[type]) this.#options = { ...defaultValues[type] };
   }
 
-  /**
-   * Set an option
-   * @param {BuiltInIndicatorOption} key The option you want to change
-   * @param {*} value The new value of the property
-   * @param {boolean} FORCE Ignore type and key verifications
-   */
-  setOption(key, value, FORCE = false) {
+  setOption(key: BuiltInIndicatorOption | string, value: unknown, FORCE = false): void {
     if (FORCE) {
       this.#options[key] = value;
       return;
     }
 
-    if (defaultValues[this.#type] && defaultValues[this.#type][key] !== undefined) {
-      const requiredType = typeof defaultValues[this.#type][key];
+    const defaults = defaultValues[this.#type];
+    if (defaults && defaults[key] !== undefined) {
+      const requiredType = typeof defaults[key];
       const valType = typeof value;
       if (requiredType !== valType) {
         throw new Error(`Wrong '${key}' value type '${valType}' (must be '${requiredType}')`);
       }
     }
 
-    if (defaultValues[this.#type] && defaultValues[this.#type][key] === undefined) {
+    if (defaults && defaults[key] === undefined) {
       throw new Error(`Option '${key}' is denied with '${this.#type}' indicator`);
     }
 
     this.#options[key] = value;
   }
-};
+}

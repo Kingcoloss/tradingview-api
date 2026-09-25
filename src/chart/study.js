@@ -3,7 +3,7 @@ const { parseCompressed } = require('../protocol');
 const graphicParser = require('./graphicParser').default;
 
 const PineIndicator = require('../classes/PineIndicator').default;
-const BuiltInIndicator = require('../classes/BuiltInIndicator');
+const BuiltInIndicator = require('../classes/BuiltInIndicator').default;
 
 /**
  * Get pine inputs
