@@ -1,0 +1,13 @@
+[
+  "~m~54~m~{\"m\":\"set_auth_token\",\"p\":[\"unauthorized_user_token\"]}",
+  "~m~52~m~{\"m\":\"quote_create_session\",\"p\":[\"qs_AAAAAAAAAAAA\"]}",
+  "~m~662~m~{\"m\":\"quote_set_fields\",\"p\":[\"qs_AAAAAAAAAAAA\",\"base-currency-logoid\",\"ch\",\"chp\",\"currency-logoid\",\"currency_code\",\"current_session\",\"description\",\"exchange\",\"format\",\"fractional\",\"is_tradable\",\"language\",\"local_description\",\"logoid\",\"lp\",\"lp_time\",\"minmov\",\"minmove2\",\"original_name\",\"pricescale\",\"pro_name\",\"short_name\",\"type\",\"update_mode\",\"volume\",\"ask\",\"bid\",\"fundamentals\",\"high_price\",\"low_price\",\"open_price\",\"prev_close_price\",\"rch\",\"rchp\",\"rtc\",\"rtc_time\",\"status\",\"industry\",\"basic_eps_net_income\",\"beta_1_year\",\"market_cap_basic\",\"earnings_per_share_basic_ttm\",\"price_earnings_ttm\",\"sector\",\"dividends_yield\",\"timezone\",\"country_code\",\"provider_id\"]}",
+  "~m~108~m~{\"m\":\"quote_add_symbols\",\"p\":[\"qs_AAAAAAAAAAAA\",\"={\\\"session\\\":\\\"regular\\\",\\\"symbol\\\":\\\"BINANCE:BTCEUR\\\"}\"]}",
+  "~m~52~m~{\"m\":\"chart_create_session\",\"p\":[\"cs_AAAAAAAAAAAA\"]}",
+  "~m~115~m~{\"m\":\"resolve_symbol\",\"p\":[\"cs_AAAAAAAAAAAA\",\"ser_1\",\"={\\\"symbol\\\":\\\"BINANCE:BTCEUR\\\",\\\"adjustment\\\":\\\"splits\\\"}\"]}",
+  "~m~76~m~{\"m\":\"create_series\",\"p\":[\"cs_AAAAAAAAAAAA\",\"$prices\",\"s1\",\"ser_1\",\"D\",100]}",
+  "~m~76~m~{\"m\":\"modify_series\",\"p\":[\"cs_AAAAAAAAAAAA\",\"$prices\",\"s1\",\"ser_1\",\"15\",\"\"]}",
+  "~m~111~m~{\"m\":\"quote_remove_symbols\",\"p\":[\"qs_AAAAAAAAAAAA\",\"={\\\"session\\\":\\\"regular\\\",\\\"symbol\\\":\\\"BINANCE:BTCEUR\\\"}\"]}",
+  "~m~52~m~{\"m\":\"quote_delete_session\",\"p\":[\"qs_AAAAAAAAAAAA\"]}",
+  "~m~52~m~{\"m\":\"chart_delete_session\",\"p\":[\"cs_AAAAAAAAAAAA\"]}"
+]
