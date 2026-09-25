@@ -1,7 +1,7 @@
 const os = require('os');
 const axios = require('axios');
 
-const PineIndicator = require('./classes/PineIndicator');
+const PineIndicator = require('./classes/PineIndicator').default;
 const { genAuthCookies } = require('./utils');
 
 const validateStatus = (status) => status < 500;
