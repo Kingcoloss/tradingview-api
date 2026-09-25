@@ -2,7 +2,7 @@ import { describe, expect, it } from '../utils';
 import { createFakeTransport } from '../fake-transport';
 import { formatWSPacket } from '../../src/protocol';
 
-const Client = require('../../src/client');
+const Client = require('../../src/client').default;
 
 describe('client transport injection', () => {
   it('queues login first, routes events, and closes through injected transport', async () => {
