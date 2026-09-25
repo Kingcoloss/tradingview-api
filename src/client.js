@@ -3,6 +3,7 @@ const protocol = require('./protocol');
 
 const quoteSessionGenerator = require('./quote/session');
 const chartSessionGenerator = require('./chart/session');
+const { defaultTransport } = require('./transport/default');
 
 /**
  * @typedef {Object} Session
@@ -34,7 +35,7 @@ const chartSessionGenerator = require('./chart/session');
 
 /** @class */
 module.exports = class Client {
-  #ws;
+  #transport;
 
   #logged = false;
 
@@ -45,7 +46,7 @@ module.exports = class Client {
 
   /** If the cient was closed */
   get isOpen() {
-    return this.#ws.readyState === WebSocket.OPEN;
+    return this.#transport.state === 'open';
   }
 
   /** @type {SessionList} */
@@ -158,14 +159,14 @@ module.exports = class Client {
     protocol.parseWSPacket(str).forEach((packet) => {
       if (global.TW_DEBUG) console.log('§90§30§107 CLIENT §0 PACKET', packet);
       if (typeof packet === 'number') { // Ping
-        this.#ws.send(protocol.formatWSPacket(`~h~${packet}`));
+        this.#transport.send(protocol.formatWSPacket(`~h~${packet}`));
         this.#handleEvent('ping', packet);
         return;
       }
 
       if (packet.m === 'protocol_error') { // Error
         this.#handleError('Client critical error:', packet.p);
-        this.#ws.close();
+        this.#transport.close();
         return;
       }
 
@@ -204,7 +205,7 @@ module.exports = class Client {
   sendQueue() {
     while (this.isOpen && this.#logged && this.#sendQueue.length > 0) {
       const packet = this.#sendQueue.shift();
-      this.#ws.send(packet);
+      this.#transport.send(packet);
       if (global.TW_DEBUG) console.log('§90§30§107 > §0', packet);
     }
   }
@@ -217,6 +218,7 @@ module.exports = class Client {
    * @prop {'data' | 'prodata' | 'widgetdata'} [server] Server type
    * @prop {string} [location] Auth page location (For france: https://fr.tradingview.com/)
    * @prop {Object<string, string>} [headers] Custom WebSocket headers
+   * @prop {import('./transport/types').TransportFactory} [transport] Transport factory
    */
 
   /**
@@ -235,13 +237,29 @@ module.exports = class Client {
       Pragma: 'no-cache',
     };
 
-    this.#ws = new WebSocket(`wss://${server}.tradingview.com/socket.io/websocket?from=chart&type=chart`, {
-      headers: {
-        Origin: 'https://www.tradingview.com',
-        ...defaultHeaders,
-        ...clientOptions.headers,
+    const factory = clientOptions.transport || defaultTransport;
+    this.#transport = factory(
+      {
+        url: `wss://${server}.tradingview.com/socket.io/websocket?from=chart&type=chart`,
+        headers: {
+          Origin: 'https://www.tradingview.com',
+          ...defaultHeaders,
+          ...clientOptions.headers,
+        },
       },
-    });
+      {
+        onOpen: () => {
+          this.#handleEvent('connected');
+          this.sendQueue();
+        },
+        onClose: () => {
+          this.#logged = false;
+          this.#handleEvent('disconnected');
+        },
+        onError: (msg) => this.#handleError('WebSocket', msg),
+        onMessage: (data) => this.#parsePacket(data),
+      },
+    );
 
     if (clientOptions.token) {
       misc.getUser(
@@ -266,22 +284,6 @@ module.exports = class Client {
       this.#logged = true;
       this.sendQueue();
     }
-
-    this.#ws.addEventListener('open', () => {
-      this.#handleEvent('connected');
-      this.sendQueue();
-    });
-
-    this.#ws.addEventListener('close', () => {
-      this.#logged = false;
-      this.#handleEvent('disconnected');
-    });
-
-    this.#ws.addEventListener('error', (err) => {
-      this.#handleError('WebSocket', err.message);
-    });
-
-    this.#ws.addEventListener('message', (event) => this.#parsePacket(event.data));
   }
 
   /** @type {ClientBridge} */
@@ -302,7 +304,7 @@ module.exports = class Client {
    */
   end() {
     return new Promise((cb) => {
-      if (this.#ws.readyState) this.#ws.close();
+      if (this.#transport.state !== 'closed') this.#transport.close();
       cb();
     });
   }
