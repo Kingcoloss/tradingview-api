@@ -34,6 +34,7 @@ module.exports = {
     'no-await-in-loop': 'off',
     'no-continue': 'off',
     'guard-for-in': 'off',
+    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never' }],
   },
   overrides: [
     {
