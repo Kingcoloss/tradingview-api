@@ -1,17 +1,15 @@
-const { genSessionID } = require('../utils');
-const { parseCompressed } = require('../protocol');
-const graphicParser = require('./graphicParser').default;
+import { genSessionID } from '../utils';
+import { parseCompressed } from '../protocol';
+import graphicParser from './graphicParser';
+import PineIndicator from '../classes/PineIndicator';
+import BuiltInIndicator from '../classes/BuiltInIndicator';
+import type { ChartSessionBridge } from './session';
+import type { SessionPacket } from '../client';
+import type { GraphicData } from './graphicParser';
 
-const PineIndicator = require('../classes/PineIndicator').default;
-const BuiltInIndicator = require('../classes/BuiltInIndicator').default;
-
-/**
- * Get pine inputs
- * @param {PineIndicator | BuiltInIndicator} options
- */
-function getInputs(options) {
+function getInputs(options: PineIndicator | BuiltInIndicator): Record<string, unknown> {
   if (options instanceof PineIndicator) {
-    const pineInputs = { text: options.script };
+    const pineInputs: Record<string, unknown> = { text: options.script };
 
     if (options.pineId) pineInputs.pineId = options.pineId;
     if (options.pineVersion) pineInputs.pineVersion = options.pineVersion;
@@ -32,7 +30,18 @@ function getInputs(options) {
   return options.options;
 }
 
-const parseTrades = (trades) => trades.reverse().map((t) => ({
+interface RawTrade {
+  e: { c: string; tp: string; p: number; tm: number };
+  x: { c: string; p: number; tm: number };
+  q: number;
+  tp: unknown;
+  cp: unknown;
+  rn: unknown;
+  dd: unknown;
+}
+
+// eslint-disable-next-line no-use-before-define
+const parseTrades = (trades: RawTrade[]): TradeReport[] => trades.reverse().map((t) => ({
   entry: {
     name: t.e.c,
     type: (t.e.tp[0] === 's' ? 'short' : 'long'),
@@ -142,65 +151,85 @@ const parseTrades = (trades) => trades.reverse().map((t) => ({
  * @prop {number} [performance.sortinoRatio] Strategy Sortino Ratio
  */
 
-/**
- * @param {import('./session').ChartSessionBridge} chartSession
- */
-module.exports = (chartSession) => class ChartStudy {
+export interface TradeReport {
+  entry: { name: string; type: 'long' | 'short'; value: number; time: number };
+  exit: { name: string; value: number; time: number };
+  quantity: number;
+  profit: unknown;
+  cumulative: unknown;
+  runup: unknown;
+  drawdown: unknown;
+}
+
+export interface PerfReport {
+  [key: string]: number;
+}
+
+export interface FromTo {
+  from: number;
+  to: number;
+}
+
+export interface StrategyReport {
+  currency?: 'EUR' | 'USD' | 'JPY' | '' | 'CHF';
+  settings?: Record<string, unknown>;
+  trades: TradeReport[];
+  history: Record<string, unknown>;
+  performance: Record<string, PerfReport | number | undefined>;
+}
+
+export type UpdateChangeType = 'plots' | 'report.currency' | 'report.settings'
+  | 'report.perf' | 'report.trades' | 'report.history' | 'graphic';
+
+type StudyEvent = 'studyCompleted' | 'update' | 'event' | 'error';
+type StudyCallback = (...args: any[]) => void;
+type StudyCallbacks = Record<StudyEvent, StudyCallback[]>;
+
+export default function studyConstructor(chartSession: ChartSessionBridge) {
+  return class ChartStudy {
   #studID = genSessionID('st');
 
   #studyListeners = chartSession.studyListeners;
 
-  /**
-   * Table of periods values indexed by timestamp
-   * @type {Object<number, {}[]>}
-   */
-  #periods = {};
+  #periods: Record<number, Record<string, unknown>> = {};
 
-  /** @return {{}[]} List of periods values */
-  get periods() {
-    return Object.values(this.#periods).sort((a, b) => b.$time - a.$time);
+  get periods(): Record<string, unknown>[] {
+    return Object.values(this.#periods).sort(
+      (a, b) => (b.$time as number) - (a.$time as number),
+    );
   }
 
-  /**
-   * List of graphic xPos indexes
-   * @type {number[]}
-   */
-  #indexes = [];
+  #indexes: number[] = [];
 
-  /**
-   * Table of graphic drawings indexed by type and ID
-   * @type {Object<string, Object<number, {}>>}
-   */
-  #graphic = {};
+  #graphic: Record<string, Record<number, any>> = {};
 
   /**
    * Table of graphic drawings indexed by type
    * @return {import('./graphicParser').GraphicData}
    */
-  get graphic() {
-    const translator = {};
+  get graphic(): GraphicData {
+    const translator: Record<string, number> = {};
 
     Object.keys(chartSession.indexes)
-      .sort((a, b) => chartSession.indexes[b] - chartSession.indexes[a])
+      .sort((a, b) => chartSession.indexes[Number(b)] - chartSession.indexes[Number(a)])
       .forEach((r, n) => { translator[r] = n; });
 
     const indexes = this.#indexes.map((i) => translator[i]);
     return graphicParser(this.#graphic, indexes);
   }
 
-  /** @type {StrategyReport} */
-  #strategyReport = {
+  #strategyReport: StrategyReport = {
     trades: [],
     history: {},
     performance: {},
   };
 
   /** @return {StrategyReport} Get the strategy report if available */
-  get strategyReport() {
+  get strategyReport(): StrategyReport {
     return this.#strategyReport;
   }
 
-  #callbacks = {
+  #callbacks: StudyCallbacks = {
     studyCompleted: [],
     update: [],
 
@@ -208,16 +237,12 @@ module.exports = (chartSession) => class ChartStudy {
     error: [],
   };
 
-  /**
-   * @param {ChartEvent} ev Client event
-   * @param {...{}} data Packet data
-   */
-  #handleEvent(ev, ...data) {
-    this.#callbacks[ev].forEach((e) => e(...data));
-    this.#callbacks.event.forEach((e) => e(ev, ...data));
+  #handleEvent(ev: StudyEvent, ...data: unknown[]): void {
+    this.#callbacks[ev].forEach((callback) => callback(...data));
+    this.#callbacks.event.forEach((callback) => callback(ev, ...data));
   }
 
-  #handleError(...msgs) {
+  #handleError(...msgs: unknown[]): void {
     if (this.#callbacks.error.length === 0) console.error(...msgs);
     else this.#handleEvent('error', ...msgs);
   }
@@ -225,7 +250,9 @@ module.exports = (chartSession) => class ChartStudy {
   /**
    * @param {PineIndicator | BuiltInIndicator} indicator Indicator object instance
    */
-  constructor(indicator) {
+  instance: PineIndicator | BuiltInIndicator;
+
+  constructor(indicator: PineIndicator | BuiltInIndicator) {
     if (!(indicator instanceof PineIndicator) && !(indicator instanceof BuiltInIndicator)) {
       throw new Error(`Indicator argument must be an instance of PineIndicator or BuiltInIndicator.
       Please use 'TradingView.getIndicator(...)' function.`);
@@ -234,7 +261,7 @@ module.exports = (chartSession) => class ChartStudy {
     /** @type {PineIndicator | BuiltInIndicator} Indicator instance */
     this.instance = indicator;
 
-    this.#studyListeners[this.#studID] = async (packet) => {
+    this.#studyListeners[this.#studID] = async (packet: SessionPacket) => {
       if (global.TW_DEBUG) console.log('§90§30§105 STUDY §0 DATA', packet);
 
       if (packet.type === 'study_completed') {
@@ -244,23 +271,23 @@ module.exports = (chartSession) => class ChartStudy {
 
       if (['timescale_update', 'du'].includes(packet.type)) {
         const changes = [];
-        const data = packet.data[1][this.#studID];
+        const data = (packet.data[1] as Record<string, any>)[this.#studID];
 
         if (data && data.st && data.st[0]) {
-          data.st.forEach((p) => {
-            const period = {};
+          data.st.forEach((p: { v: unknown[] }) => {
+            const period: Record<string, unknown> = {};
 
-            p.v.forEach((plot, i) => {
-              if (!this.instance.plots) {
+            p.v.forEach((plot: unknown, i: number) => {
+              if (!(this.instance instanceof PineIndicator) || !this.instance.plots) {
                 period[i === 0 ? '$time' : `plot_${i - 1}`] = plot;
                 return;
               }
-              const plotName = (i === 0 ? '$time' : this.instance.plots[`plot_${i - 1}`]);
+              const plotName = (i === 0 ? '$time' : (this.instance as PineIndicator).plots[`plot_${i - 1}`]);
               if (plotName && !period[plotName]) period[plotName] = plot;
               else period[`plot_${i - 1}`] = plot;
             });
 
-            this.#periods[p.v[0]] = period;
+            this.#periods[p.v[0] as number] = period;
           });
 
           changes.push('plots');
@@ -271,7 +298,7 @@ module.exports = (chartSession) => class ChartStudy {
 
           if (parsed.graphicsCmds) {
             if (parsed.graphicsCmds.erase) {
-              parsed.graphicsCmds.erase.forEach((instruction) => {
+              parsed.graphicsCmds.erase.forEach((instruction: any) => {
                 // console.log('Erase', instruction);
                 if (instruction.action === 'all') {
                   if (!instruction.type) {
@@ -292,8 +319,8 @@ module.exports = (chartSession) => class ChartStudy {
             if (parsed.graphicsCmds.create) {
               Object.keys(parsed.graphicsCmds.create).forEach((drawType) => {
                 if (!this.#graphic[drawType]) this.#graphic[drawType] = {};
-                parsed.graphicsCmds.create[drawType].forEach((group) => {
-                  group.data.forEach((item) => {
+                parsed.graphicsCmds.create[drawType].forEach((group: any) => {
+                  group.data.forEach((item: any) => {
                     this.#graphic[drawType][item.id] = item;
                   });
                 });
@@ -306,7 +333,7 @@ module.exports = (chartSession) => class ChartStudy {
             changes.push('graphic');
           }
 
-          const updateStrategyReport = (report) => {
+          const updateStrategyReport = (report: any) => {
             if (report.currency) {
               this.#strategyReport.currency = report.currency;
               changes.push('report.currency');
@@ -343,13 +370,13 @@ module.exports = (chartSession) => class ChartStudy {
           if (parsed.dataCompressed) {
             try {
               const compressedData = await parseCompressed(parsed.dataCompressed);
-              if (compressedData && compressedData.report) {
-                updateStrategyReport(compressedData.report);
+              if (compressedData && (compressedData as any).report) {
+                updateStrategyReport((compressedData as any).report);
               }
             } catch (error) {
               this.#handleError(
                 'Unable to parse compressed strategy report:',
-                error.message || error,
+                (error as Error).message || error,
               );
             }
           }
@@ -383,7 +410,7 @@ module.exports = (chartSession) => class ChartStudy {
   /**
    * @param {PineIndicator | BuiltInIndicator} indicator Indicator instance
    */
-  setIndicator(indicator) {
+  setIndicator(indicator: PineIndicator | BuiltInIndicator): void {
     if (!(indicator instanceof PineIndicator) && !(indicator instanceof BuiltInIndicator)) {
       throw new Error(`Indicator argument must be an instance of PineIndicator or BuiltInIndicator.
       Please use 'TradingView.getIndicator(...)' function.`);
@@ -404,7 +431,7 @@ module.exports = (chartSession) => class ChartStudy {
    * @param {() => void} cb
    * @event
    */
-  onReady(cb) {
+  onReady(cb: () => void): void {
     this.#callbacks.studyCompleted.push(cb);
   }
 
@@ -421,7 +448,7 @@ module.exports = (chartSession) => class ChartStudy {
    * @param {(changes: UpdateChangeType[]) => void} cb
    * @event
    */
-  onUpdate(cb) {
+  onUpdate(cb: (changes: UpdateChangeType[]) => void): void {
     this.#callbacks.update.push(cb);
   }
 
@@ -430,16 +457,17 @@ module.exports = (chartSession) => class ChartStudy {
    * @param {(...any) => void} cb Callback
    * @event
    */
-  onError(cb) {
+  onError(cb: (...args: unknown[]) => void): void {
     this.#callbacks.error.push(cb);
   }
 
   /** Remove the study */
-  remove() {
+  remove(): void {
     chartSession.send('remove_study', [
       chartSession.sessionID,
       this.#studID,
     ]);
     delete this.#studyListeners[this.#studID];
   }
-};
+  };
+}

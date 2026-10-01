@@ -2,7 +2,7 @@ import type { ClientBridge, SendPacket, SessionPacket } from '../client';
 import type { TimeFrame, Timezone } from '../types';
 import { genSessionID } from '../utils';
 
-const studyConstructor = require('./study');
+import studyConstructor from './study';
 
 export type ChartType = 'HeikinAshi' | 'Renko' | 'LineBreak' | 'Kagi'
   | 'PointAndFigure' | 'Range';
