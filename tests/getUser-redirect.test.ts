@@ -28,12 +28,12 @@ describe('getUser redirect protection', () => {
       exports: axiosMock,
     } as any;
 
-    const miscPath = require.resolve('../src/miscRequests');
+    const miscPath = require.resolve('../src/http/miscRequests');
     delete require.cache[miscPath];
 
     try {
       // eslint-disable-next-line global-require
-      const misc = require('../src/miscRequests');
+      const misc = require('../src/http/miscRequests');
       await expect(
         misc.getUser('fake_session', 'fake_signature'),
       ).rejects.toThrow('Too many redirects');

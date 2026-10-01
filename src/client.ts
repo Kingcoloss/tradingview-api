@@ -1,5 +1,5 @@
 import chartSessionGenerator from './chart/session';
-import misc from './miscRequests';
+import * as misc from './http/miscRequests';
 import {
   formatWSPacket,
   parseWSPacket,

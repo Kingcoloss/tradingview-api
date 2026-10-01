@@ -1,4 +1,4 @@
-const miscRequests = require('./src/miscRequests');
+const miscRequests = require('./src/http/miscRequests');
 const Client = require('./src/client').default;
 const BuiltInIndicator = require('./src/classes/BuiltInIndicator').default;
 const PineIndicator = require('./src/classes/PineIndicator').default;
