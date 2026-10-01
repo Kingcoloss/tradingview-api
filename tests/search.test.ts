@@ -1,5 +1,5 @@
 import { describe, it, expect } from './utils';
-import { searchMarket, searchIndicator, searchMarketV3 } from '../main';
+import { searchMarket, searchIndicator, searchMarketV3 } from '../src/index';
 
 describe('Search functions', () => {
   it('market search (old): "BINANCE:" has results', async () => {

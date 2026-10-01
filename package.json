@@ -8,7 +8,9 @@
     "example": "bun run",
     "example:dev": "bun --watch run",
     "pack:bundle": "bun build --minify --outfile=dist/tradingviewapi.bundle.js main.js",
-    "pack:bun": "bun build --minify --target=bun --outfile=dist/tradingviewapi.bun.js main.js",
+    "pack:bun": "bun build src/index.ts --target=bun --format=esm --minify --external axios --external jszip --outfile=dist/bun/index.mjs",
+    "pack:bun:cjs": "bun build src/index.ts --target=bun --format=cjs --minify --external axios --external jszip --outfile=dist/bun/index.cjs",
+    "build:bun": "bun run scripts/build-bun.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .js,.ts",
     "build:types": "tsc -p tsconfig.build.json"

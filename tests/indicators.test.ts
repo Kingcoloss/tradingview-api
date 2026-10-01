@@ -1,5 +1,5 @@
 import { describe, it, expect } from './utils';
-import TradingView from '../main';
+import TradingView from '../src/index';
 
 const token = <string>process.env.SESSION;
 const signature = <string>process.env.SIGNATURE;

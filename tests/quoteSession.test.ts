@@ -1,5 +1,5 @@
 import { describe, it, expect } from './utils';
-import TradingView from '../main';
+import TradingView from '../src/index';
 
 describe('Quote session', () => {
   let client: TradingView.Client;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from './utils';
-import TradingView from '../main';
+import TradingView from '../src/index';
 import utils from './utils';
 
 describe('BuiltInIndicator', () => {
