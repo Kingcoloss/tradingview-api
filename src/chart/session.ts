@@ -1,13 +1,13 @@
-const { genSessionID } = require('../utils');
+import type { ClientBridge, SendPacket, SessionPacket } from '../client';
+import type { TimeFrame, Timezone } from '../types';
+import { genSessionID } from '../utils';
 
 const studyConstructor = require('./study');
 
-/**
- * @typedef {'HeikinAshi' | 'Renko' | 'LineBreak' | 'Kagi' | 'PointAndFigure'
- *  | 'Range'} ChartType Custom chart type
- */
+export type ChartType = 'HeikinAshi' | 'Renko' | 'LineBreak' | 'Kagi'
+  | 'PointAndFigure' | 'Range';
 
-const ChartTypes = {
+const ChartTypes: Record<ChartType, string> = {
   HeikinAshi: 'BarSetHeikenAshi@tv-basicstudies-60!',
   Renko: 'BarSetRenko@tv-prostudies-40!',
   LineBreak: 'BarSetPriceBreak@tv-prostudies-34!',
@@ -16,143 +16,146 @@ const ChartTypes = {
   Range: 'BarSetRange@tv-basicstudies-72!',
 };
 
-/**
- * @typedef {Object} ChartInputs Custom chart type
- * @prop {number} [atrLength] Renko/Kagi/PointAndFigure ATR length
- * @prop {'open' | 'high' | 'low' | 'close' | 'hl2'
- *  | 'hlc3' | 'ohlc4'} [source] Renko/LineBreak/Kagi source
- * @prop {'ATR' | string} [style] Renko/Kagi/PointAndFigure style
- * @prop {number} [boxSize] Renko/PointAndFigure box size
- * @prop {number} [reversalAmount] Kagi/PointAndFigure reversal amount
- * @prop {'Close'} [sources] Renko/PointAndFigure sources
- * @prop {boolean} [wicks] Renko wicks
- * @prop {number} [lb] LineBreak Line break
- * @prop {boolean} [oneStepBackBuilding] PointAndFigure oneStepBackBuilding
- * @prop {boolean} [phantomBars] Range phantom bars
- * @prop {number} [range] Range range
- */
+export interface ChartInputs {
+  atrLength?: number;
+  source?: 'open' | 'high' | 'low' | 'close' | 'hl2' | 'hlc3' | 'ohlc4';
+  style?: 'ATR' | string;
+  boxSize?: number;
+  reversalAmount?: number;
+  sources?: 'Close';
+  wicks?: boolean;
+  lb?: number;
+  oneStepBackBuilding?: boolean;
+  phantomBars?: boolean;
+  range?: number;
+}
 
-/** @typedef {Object<string, Function[]>} StudyListeners */
+export type StudyListeners = Record<string, (packet: SessionPacket) => void>;
 
-/**
- * @typedef {Object} ChartSessionBridge
- * @prop {string} sessionID
- * @prop {StudyListeners} studyListeners
- * @prop {Object<number, number>} indexes
- * @prop {import('../client').SendPacket} send
-*/
+export interface ChartSessionBridge {
+  sessionID: string;
+  studyListeners: StudyListeners;
+  indexes: Record<number, number>;
+  send: SendPacket;
+}
 
-/**
- * @typedef {'seriesLoaded' | 'symbolLoaded' | 'update' | 'error'} ChartEvent
- */
+export type ChartEvent = 'seriesLoaded' | 'symbolLoaded' | 'update'
+  | 'replayLoaded' | 'replayPoint' | 'replayResolution' | 'replayEnd'
+  | 'event' | 'error';
 
-/**
- * @typedef {Object} PricePeriod
- * @prop {number} time Period timestamp
- * @prop {number} open Period open value
- * @prop {number} close Period close value
- * @prop {number} max Period max value
- * @prop {number} min Period min value
- * @prop {number} volume Period volume value
- */
+export interface PricePeriod {
+  time: number;
+  open: number;
+  close: number;
+  max: number;
+  min: number;
+  volume: number;
+}
 
-/**
- * @typedef {Object} Subsession
- * @prop {string} id Subsession ID (ex: 'regular')
- * @prop {string} description Subsession description (ex: 'Regular')
- * @prop {boolean} private If private
- * @prop {string} session Session (ex: '24x7')
- * @prop {string} session-correction Session correction
- * @prop {string} session-display Session display (ex: '24x7')
- */
+export interface Subsession {
+  id: string;
+  description: string;
+  private: boolean;
+  session: string;
+  'session-correction': string;
+  'session-display': string;
+}
 
-/**
- * @typedef {Object} MarketInfos
- * @prop {string} series_id            Used series (ex: 'ser_1')
- * @prop {string} base_currency        Base currency (ex: 'BTC')
- * @prop {string} base_currency_id     Base currency ID (ex: 'XTVCBTC')
- * @prop {string} name                 Market short name (ex: 'BTCEUR')
- * @prop {string} full_name            Market full name (ex: 'COINBASE:BTCEUR')
- * @prop {string} pro_name             Market pro name (ex: 'COINBASE:BTCEUR')
- * @prop {string} description          Market symbol description (ex: 'BTC/EUR')
- * @prop {string} short_description    Market symbol short description (ex: 'BTC/EUR')
- * @prop {string} exchange             Market exchange (ex: 'COINBASE')
- * @prop {string} listed_exchange      Market exchange (ex: 'COINBASE')
- * @prop {string} provider_id          Values provider ID (ex: 'coinbase')
- * @prop {string} currency_id          Used currency ID (ex: 'EUR')
- * @prop {string} currency_code        Used currency code (ex: 'EUR')
- * @prop {string} variable_tick_size   Variable tick size
- * @prop {number} pricescale           Price scale
- * @prop {number} pointvalue           Point value
- * @prop {string} session              Session (ex: '24x7')
- * @prop {string} session_display      Session display (ex: '24x7')
- * @prop {string} type                 Market type (ex: 'crypto')
- * @prop {boolean} has_intraday        If intraday values are available
- * @prop {boolean} fractional          If market is fractional
- * @prop {boolean} is_tradable         If the market is curently tradable
- * @prop {number} minmov               Minimum move value
- * @prop {number} minmove2             Minimum move value 2
- * @prop {string} timezone             Used timezone
- * @prop {boolean} is_replayable       If the replay mode is available
- * @prop {boolean} has_adjustment      If the adjustment mode is enabled
- * @prop {boolean} has_extended_hours  Has extended hours
- * @prop {string} bar_source           Bar source
- * @prop {string} bar_transform        Bar transform
- * @prop {boolean} bar_fillgaps        Bar fill gaps
- * @prop {string} allowed_adjustment   Allowed adjustment (ex: 'none')
- * @prop {string} subsession_id        Subsession ID (ex: 'regular')
- * @prop {string} pro_perm             Pro permission (ex: '')
- * @prop {[]} base_name                Base name (ex: ['COINBASE:BTCEUR'])
- * @prop {[]} legs                     Legs (ex: ['COINBASE:BTCEUR'])
- * @prop {Subsession[]} subsessions    Sub sessions
- * @prop {[]} typespecs                Typespecs (ex: [])
- * @prop {[]} resolutions              Resolutions (ex: [])
- * @prop {[]} aliases                  Aliases (ex: [])
- * @prop {[]} alternatives             Alternatives (ex: [])
- */
+/* eslint-disable camelcase */
+export interface MarketInfos {
+  series_id: string;
+  base_currency: string;
+  base_currency_id: string;
+  name: string;
+  full_name: string;
+  pro_name: string;
+  description: string;
+  short_description: string;
+  exchange: string;
+  listed_exchange: string;
+  provider_id: string;
+  currency_id: string;
+  currency_code: string;
+  variable_tick_size: string;
+  pricescale: number;
+  pointvalue: number;
+  session: string;
+  session_display: string;
+  type: string;
+  has_intraday: boolean;
+  fractional: boolean;
+  is_tradable: boolean;
+  minmov: number;
+  minmove2: number;
+  timezone: string;
+  is_replayable: boolean;
+  has_adjustment: boolean;
+  has_extended_hours: boolean;
+  bar_source: string;
+  bar_transform: string;
+  bar_fillgaps: boolean;
+  allowed_adjustment: string;
+  subsession_id: string;
+  pro_perm: string;
+  base_name: unknown[];
+  legs: unknown[];
+  subsessions: Subsession[];
+  typespecs: unknown[];
+  resolutions: unknown[];
+  aliases: unknown[];
+  alternatives: unknown[];
+  [key: string]: unknown;
+}
+/* eslint-enable camelcase */
 
-/**
- * @param {import('../client').ClientBridge} client
- */
-module.exports = (client) => class ChartSession {
+export interface ChartOptions {
+  timeframe?: TimeFrame;
+  range?: number;
+  to?: number;
+  adjustment?: 'splits' | 'dividends';
+  backadjustment?: boolean;
+  session?: 'regular' | 'extended';
+  currency?: 'EUR' | 'USD' | string;
+  type?: ChartType;
+  inputs?: ChartInputs;
+  replay?: number;
+}
+
+type ChartCallback = (...args: any[]) => void;
+type ChartCallbacks = Record<ChartEvent, ChartCallback[]>;
+
+export default function chartSessionGenerator(client: ClientBridge) {
+  return class ChartSession {
   #chartSessionID = genSessionID('cs');
 
   #replaySessionID = genSessionID('rs');
 
   #replayMode = false;
 
-  /** @type {Object<string, (): any>} */
-  #replayOKCB = {};
+  #replayOKCB: Record<string, () => void> = {};
 
   /** Parent client */
   #client = client;
 
-  /** @type {StudyListeners} */
-  #studyListeners = {};
+  #studyListeners: StudyListeners = {};
 
-  /**
-   * Table of periods values indexed by timestamp
-   * @type {Object<number, PricePeriod[]>}
-   */
-  #periods = {};
+  /** Table of periods values indexed by timestamp. */
+  #periods: Record<number, PricePeriod> = {};
 
-  /** @return {PricePeriod[]} List of periods values */
-  get periods() {
+  /** List of periods values. */
+  get periods(): PricePeriod[] {
     return Object.values(this.#periods).sort((a, b) => b.time - a.time);
   }
 
-  /**
-   * Current market infos
-   * @type {MarketInfos}
-   */
-  #infos = {};
+  /** Current market infos. */
+  #infos: Partial<MarketInfos> = {};
 
-  /** @return {MarketInfos} Current market infos */
-  get infos() {
+  /** Current market infos. */
+  get infos(): Partial<MarketInfos> {
     return this.#infos;
   }
 
-  #callbacks = {
+  #callbacks: ChartCallbacks = {
     seriesLoaded: [],
     symbolLoaded: [],
     update: [],
@@ -166,16 +169,12 @@ module.exports = (client) => class ChartSession {
     error: [],
   };
 
-  /**
-   * @param {ChartEvent} ev Client event
-   * @param {...{}} data Packet data
-   */
-  #handleEvent(ev, ...data) {
-    this.#callbacks[ev].forEach((e) => e(...data));
-    this.#callbacks.event.forEach((e) => e(ev, ...data));
+  #handleEvent(ev: ChartEvent, ...data: unknown[]): void {
+    this.#callbacks[ev].forEach((callback) => callback(...data));
+    this.#callbacks.event.forEach((callback) => callback(ev, ...data));
   }
 
-  #handleError(...msgs) {
+  #handleError(...msgs: unknown[]): void {
     if (this.#callbacks.error.length === 0) console.error(...msgs);
     else this.#handleEvent('error', ...msgs);
   }
@@ -183,7 +182,7 @@ module.exports = (client) => class ChartSession {
   constructor() {
     this.#client.sessions[this.#chartSessionID] = {
       type: 'chart',
-      onData: (packet) => {
+      onData: (packet: any) => {
         if (global.TW_DEBUG) console.log('§90§30§106 CHART SESSION §0 DATA', packet);
 
         if (typeof packet.data[1] === 'string' && this.#studyListeners[packet.data[1]]) {
@@ -202,7 +201,7 @@ module.exports = (client) => class ChartSession {
         }
 
         if (['timescale_update', 'du'].includes(packet.type)) {
-          const changes = [];
+          const changes: string[] = [];
 
           Object.keys(packet.data[1]).forEach((k) => {
             changes.push(k);
@@ -210,7 +209,7 @@ module.exports = (client) => class ChartSession {
               const periods = packet.data[1].$prices;
               if (!periods || !periods.s) return;
 
-              periods.s.forEach((p) => {
+              periods.s.forEach((p: { i: number; v: number[] }) => {
                 [this.#chartSession.indexes[p.i]] = p.v;
                 this.#periods[p.v[0]] = {
                   time: p.v[0],
@@ -251,7 +250,7 @@ module.exports = (client) => class ChartSession {
 
     this.#client.sessions[this.#replaySessionID] = {
       type: 'replay',
-      onData: (packet) => {
+      onData: (packet: any) => {
         if (global.TW_DEBUG) console.log('§90§30§106 REPLAY SESSION §0 DATA', packet);
 
         if (packet.type === 'replay_ok') {
@@ -301,7 +300,7 @@ module.exports = (client) => class ChartSession {
    * @param {number} [range] Number of loaded periods/candles (Default: 100)
    * @param {number} [reference] Reference candle timestamp (Default is now)
    */
-  setSeries(timeframe = '240', range = 100, reference = null) {
+  setSeries(timeframe: TimeFrame = '240', range = 100, reference: number | null = null): void {
     if (!this.#currentSeries) {
       this.#handleError('Please set the market before setting series');
       return;
@@ -338,7 +337,7 @@ module.exports = (client) => class ChartSession {
    * @param {ChartInputs} [options.inputs] Chart custom inputs
    * @param {number} [options.replay] Replay mode starting point (Timestamp)
    */
-  setMarket(symbol, options = {}) {
+  setMarket(symbol: string, options: ChartOptions = {}): void {
     this.#periods = {};
 
     if (this.#replayMode) {
@@ -346,7 +345,7 @@ module.exports = (client) => class ChartSession {
       this.#client.send('replay_delete_session', [this.#replaySessionID]);
     }
 
-    const symbolInit = {
+    const symbolInit: Record<string, any> = {
       symbol: symbol || 'BTCEUR',
       adjustment: options.adjustment || 'splits',
     };
@@ -376,12 +375,12 @@ module.exports = (client) => class ChartSession {
     }
 
     const complex = options.type || options.replay;
-    const chartInit = complex ? {} : symbolInit;
+    const chartInit: Record<string, any> = complex ? {} : symbolInit;
 
     if (complex) {
       if (options.replay) chartInit.replay = this.#replaySessionID;
       chartInit.symbol = symbolInit;
-      chartInit.type = ChartTypes[options.type];
+      chartInit.type = options.type ? ChartTypes[options.type] : undefined;
       if (options.type) chartInit.inputs = { ...options.inputs };
     }
 
@@ -400,7 +399,7 @@ module.exports = (client) => class ChartSession {
    * Set the chart timezone
    * @param {import('../types').Timezone} timezone New timezone
    */
-  setTimezone(timezone) {
+  setTimezone(timezone: Timezone): void {
     this.#periods = {};
     this.#client.send('switch_timezone', [this.#chartSessionID, timezone]);
   }
@@ -409,7 +408,7 @@ module.exports = (client) => class ChartSession {
    * Fetch x additional previous periods/candles values
    * @param {number} number Number of additional periods/candles you want to fetch
    */
-  fetchMore(number = 1) {
+  fetchMore(number = 1): void {
     this.#client.send('request_more_data', [this.#chartSessionID, '$prices', number]);
   }
 
@@ -418,7 +417,7 @@ module.exports = (client) => class ChartSession {
    * @param {number} number Number of additional periods/candles you want to fetch
    * @returns {Promise} Raise when the data has been fetched
    */
-  replayStep(number = 1) {
+  replayStep(number = 1): Promise<void> {
     return new Promise((cb) => {
       if (!this.#replayMode) {
         this.#handleError('No replay session');
@@ -436,7 +435,7 @@ module.exports = (client) => class ChartSession {
    * @param {number} interval Number of additional periods/candles you want to fetch
    * @returns {Promise} Raise when the replay mode starts
    */
-  replayStart(interval = 1000) {
+  replayStart(interval = 1000): Promise<void> {
     return new Promise((cb) => {
       if (!this.#replayMode) {
         this.#handleError('No replay session');
@@ -453,7 +452,7 @@ module.exports = (client) => class ChartSession {
    * Stop fetching a new period/candle every x ms
    * @returns {Promise} Raise when the replay mode stops
    */
-  replayStop() {
+  replayStop(): Promise<void> {
     return new Promise((cb) => {
       if (!this.#replayMode) {
         this.#handleError('No replay session');
@@ -471,7 +470,7 @@ module.exports = (client) => class ChartSession {
    * @param {() => void} cb
    * @event
    */
-  onSymbolLoaded(cb) {
+  onSymbolLoaded(cb: () => void): void {
     this.#callbacks.symbolLoaded.push(cb);
   }
 
@@ -480,7 +479,7 @@ module.exports = (client) => class ChartSession {
    * @param {(changes: ('$prices' | string)[]) => void} cb
    * @event
    */
-  onUpdate(cb) {
+  onUpdate(cb: (changes: ('$prices' | string)[]) => void): void {
     this.#callbacks.update.push(cb);
   }
 
@@ -489,7 +488,7 @@ module.exports = (client) => class ChartSession {
    * @param {() => void} cb
    * @event
    */
-  onReplayLoaded(cb) {
+  onReplayLoaded(cb: (instanceID: string) => void): void {
     this.#callbacks.replayLoaded.push(cb);
   }
 
@@ -501,7 +500,7 @@ module.exports = (client) => class ChartSession {
    * ) => void} cb
    * @event
    */
-  onReplayResolution(cb) {
+  onReplayResolution(cb: (timeframe: TimeFrame, index: number) => void): void {
     this.#callbacks.replayResolution.push(cb);
   }
 
@@ -510,7 +509,7 @@ module.exports = (client) => class ChartSession {
    * @param {() => void} cb
    * @event
    */
-  onReplayEnd(cb) {
+  onReplayEnd(cb: () => void): void {
     this.#callbacks.replayEnd.push(cb);
   }
 
@@ -519,7 +518,7 @@ module.exports = (client) => class ChartSession {
    * @param {(index: number) => void} cb
    * @event
    */
-  onReplayPoint(cb) {
+  onReplayPoint(cb: (index: number) => void): void {
     this.#callbacks.replayPoint.push(cb);
   }
 
@@ -528,26 +527,27 @@ module.exports = (client) => class ChartSession {
    * @param {(...any) => void} cb Callback
    * @event
    */
-  onError(cb) {
+  onError(cb: (...args: unknown[]) => void): void {
     this.#callbacks.error.push(cb);
   }
 
   /** @type {ChartSessionBridge} */
-  #chartSession = {
+  #chartSession: ChartSessionBridge = {
     sessionID: this.#chartSessionID,
     studyListeners: this.#studyListeners,
     indexes: {},
-    send: (t, p) => this.#client.send(t, p),
+    send: (type, data) => this.#client.send(type, data),
   };
 
   Study = studyConstructor(this.#chartSession);
 
   /** Delete the chart session */
-  delete() {
+  delete(): void {
     if (this.#replayMode) this.#client.send('replay_delete_session', [this.#replaySessionID]);
     this.#client.send('chart_delete_session', [this.#chartSessionID]);
     delete this.#client.sessions[this.#chartSessionID];
     delete this.#client.sessions[this.#replaySessionID];
     this.#replayMode = false;
   }
-};
+  };
+}
