@@ -8,7 +8,7 @@ await $`node scripts/append-namespace.mjs`;
 
 for (const file of ['dist/bun/index.mjs', 'dist/bun/index.cjs']) {
   const text = await Bun.file(file).text();
-  if (/(require\(|from\s+)["']ws["']/.test(text)) {
+  if (/(?:require\s*\(\s*["']ws["']\s*\)|from\s*["']ws["'])/.test(text)) {
     throw new Error(`Bun artifact ${file} contains ws reference`);
   }
 }

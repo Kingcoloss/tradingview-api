@@ -9,7 +9,7 @@ module.exports = {
   },
   ignorePatterns: ['dist/'],
   settings: {
-    'import/core-modules': ['bun:test'],
+    'import/core-modules': ['bun', 'bun:test'],
     'import/resolver': {
       node: { extensions: ['.js', '.ts'] },
     },
@@ -53,6 +53,17 @@ module.exports = {
       files: ['tests/**/*.ts'],
       rules: {
         'eol-last': 'off',
+      },
+    },
+    {
+      files: ['scripts/build-node.mjs', 'scripts/build-bun.mjs', 'tests/pack/pack.test.ts'],
+      globals: { Bun: 'readonly', Response: 'readonly' },
+    },
+    {
+      files: ['tests/types/**/*.ts', 'tests/types/**/*.js'],
+      rules: {
+        'import/no-unresolved': 'off',
+        'no-void': 'off',
       },
     },
   ],

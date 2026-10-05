@@ -4,10 +4,6 @@
   "workspaces": {
     "": {
       "name": "@mathieuc/tradingview",
-      "dependencies": {
-        "axios": "^1.5.0",
-        "jszip": "^3.7.1",
-      },
       "devDependencies": {
         "@babel/eslint-parser": "^7.15.7",
         "@mathieuc/console": "^1.0.1",
@@ -22,6 +18,14 @@
         "typescript": "^5.6.0",
         "ws": "^8",
       },
+      "peerDependencies": {
+        "axios": "^1.5.0",
+        "jszip": "^3.7.1",
+        "ws": "^8",
+      },
+      "optionalPeers": [
+        "ws",
+      ],
     },
   },
   "packages": {
