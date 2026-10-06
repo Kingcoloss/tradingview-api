@@ -9,7 +9,7 @@ module.exports = {
   },
   ignorePatterns: ['dist/'],
   settings: {
-    'import/core-modules': ['bun', 'bun:test'],
+    'import/core-modules': ['bun', 'bun:test', '@mathieuc/tradingview'],
     'import/resolver': {
       node: { extensions: ['.js', '.ts'] },
     },
