@@ -47,18 +47,32 @@ Join the Telegram group of the TradingView-API Community: [t.me/tradingview_api]
 
 ___
 
-## Installation
+## Prerequisites
 
-Stable version:
+**Bun (≥1.3.0):**
 
-```ruby
-npm i @mathieuc/tradingview
+```bash
+bun add @mathieuc/tradingview axios jszip
 ```
 
-Last version:
+**Node.js (≥20):**
 
-```ruby
-npm i github:Mathieu2301/TradingView-API
+```bash
+npm install @mathieuc/tradingview axios jszip ws
+```
+
+`axios` and `jszip` are peer dependencies. Node consumers also need `ws`; Bun uses its native WebSocket transport.
+
+## Migration to 4.0
+
+Version 4.0 requires installing peer dependencies explicitly and supports Bun ≥1.3.0 and Node.js ≥20. See the [4.0.0 changelog](CHANGELOG.md) for breaking changes and migration details.
+
+## Installation
+
+For the latest repository version instead of the npm release, install from GitHub and add the runtime's peer dependencies listed above:
+
+```bash
+npm install github:Mathieu2301/TradingView-API
 ```
 
 ## Examples
