@@ -1,4 +1,4 @@
-const TradingView = require('../main');
+const TradingView = require('@mathieuc/tradingview');
 
 /**
  * This example tests an indicator that sends graphic data such

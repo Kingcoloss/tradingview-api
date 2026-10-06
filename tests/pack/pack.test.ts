@@ -11,16 +11,31 @@ const packageRoot = process.cwd();
 let tempDir = '';
 let packedTarball = '';
 
+const httpFunctionNames = [
+  'getTA',
+  'searchMarket',
+  'searchMarketV3',
+  'searchIndicator',
+  'getIndicator',
+  'loginUser',
+  'getUser',
+  'getPrivateIndicators',
+  'getChartToken',
+  'getDrawings',
+];
+const classNames = ['Client', 'PineIndicator', 'BuiltInIndicator', 'PinePermManager'];
+
 type ConsumerResult = {
-  hasClient: boolean;
-  hasGetTA: boolean;
   resolved: string;
+  httpFunctions: string[];
+  classes: string[];
+  clientConstructible: boolean;
+  nested: { quote: boolean; chart: boolean };
 };
 
 type MissingWsResult = {
-  ok: boolean;
-  code?: string;
-  message: string;
+  resolve: { threw: boolean };
+  imported: { ok: boolean; code?: string; message?: string };
 };
 
 async function run(command: string[], cwd: string) {
@@ -39,12 +54,16 @@ async function runConsumer(command: string[], expectedPath: string) {
   const result = await run(command, tempDir);
   expect(result.exitCode).toBe(0);
   const output = JSON.parse(result.stdout) as ConsumerResult;
-  expect(output).toMatchObject({ hasClient: true, hasGetTA: true });
+  expect(output.httpFunctions).toEqual(httpFunctionNames);
+  expect(output.classes).toEqual(classNames);
+  expect(output.clientConstructible).toBe(true);
+  expect(output.nested).toEqual({ quote: true, chart: true });
   expect(output.resolved.replace(/\\/g, '/')).toContain(expectedPath);
 }
 
 describe('packed package runtime routes', () => {
   beforeAll(async () => {
+    expect((await run(['bun', 'run', 'build:all'], packageRoot)).exitCode).toBe(0);
     const bunArtifact = await Promise.all([
       readFile(join(packageRoot, 'dist/bun/index.mjs'), 'utf8'),
       readFile(join(packageRoot, 'dist/bun/index.cjs'), 'utf8'),
@@ -115,7 +134,7 @@ describe('packed package runtime routes', () => {
   });
 
   it('fails Node import when ws peer is absent', async () => {
-    const missingWs = await mkdtemp('/tmp/tvpack-missing-ws-');
+    const missingWs = await mkdtemp('/tmp/tvpack-no-peer-');
     try {
       const tarball = (await readFile(join(tempDir, 'package.json'), 'utf8'));
       const installed = JSON.parse(tarball) as { dependencies: Record<string, string> };
@@ -135,8 +154,10 @@ describe('packed package runtime routes', () => {
       const result = await run(['node', 'consumer-node-missing-ws.mjs'], missingWs);
       expect(result.exitCode).toBe(0);
       const output = JSON.parse(result.stdout) as MissingWsResult;
-      expect(output).toMatchObject({ ok: true, code: 'ERR_MODULE_NOT_FOUND' });
-      expect(output.message).toContain('ws');
+      expect(output.resolve.threw).toBe(true);
+      expect(output.imported.ok).toBe(true);
+      expect(output.imported.code).toBe('ERR_MODULE_NOT_FOUND');
+      expect(output.imported.message).toMatch(/Cannot find package 'ws'|Cannot find module 'ws'/);
     } finally {
       await rm(missingWs, { recursive: true, force: true });
     }

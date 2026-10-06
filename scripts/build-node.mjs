@@ -17,7 +17,13 @@ if (!selectedFormats.every((format) => format === 'esm' || format === 'cjs')) {
   throw new Error('Node build formats must be esm or cjs');
 }
 
-await rm('dist/node', { recursive: true, force: true });
+if (formats.length === 0) {
+  await rm('dist/node', { recursive: true, force: true });
+} else {
+  for (const format of selectedFormats) {
+    await rm(`dist/node/index.${format === 'esm' ? 'mjs' : 'cjs'}`, { force: true });
+  }
+}
 await mkdir('dist/node', { recursive: true });
 
 for (const format of selectedFormats) {

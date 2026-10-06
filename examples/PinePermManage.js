@@ -1,4 +1,4 @@
-const { PinePermManager } = require('../main');
+const { PinePermManager } = require('@mathieuc/tradingview');
 
 /**
  * This example creates a pine permission manager

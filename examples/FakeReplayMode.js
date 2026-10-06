@@ -1,4 +1,4 @@
-const { Client } = require('../main');
+const { Client } = require('@mathieuc/tradingview');
 
 /**
  * This example tests the fake replay mode which

@@ -1,4 +1,4 @@
-const TradingView = require('../main');
+const TradingView = require('@mathieuc/tradingview');
 
 /**
  * This example tests built-in indicators like volume-based indicators
