@@ -163,6 +163,35 @@ export interface TradeReport {
 
 export interface PerfReport {
   [key: string]: number;
+  avgBarsInTrade: number;
+  avgBarsInWinTrade: number;
+  avgBarsInLossTrade: number;
+  avgTrade: number;
+  avgTradePercent: number;
+  avgLosTrade: number;
+  avgLosTradePercent: number;
+  avgWinTrade: number;
+  avgWinTradePercent: number;
+  commissionPaid: number;
+  grossLoss: number;
+  grossLossPercent: number;
+  grossProfit: number;
+  grossProfitPercent: number;
+  largestLosTrade: number;
+  largestLosTradePercent: number;
+  largestWinTrade: number;
+  largestWinTradePercent: number;
+  marginCalls: number;
+  maxContractsHeld: number;
+  netProfit: number;
+  netProfitPercent: number;
+  numberOfLosingTrades: number;
+  numberOfWiningTrades: number;
+  percentProfitable: number;
+  profitFactor: number;
+  ratioAvgWinAvgLoss: number;
+  totalOpenTrades: number;
+  totalTrades: number;
 }
 
 export interface FromTo {
@@ -172,10 +201,34 @@ export interface FromTo {
 
 export interface StrategyReport {
   currency?: 'EUR' | 'USD' | 'JPY' | '' | 'CHF';
-  settings?: Record<string, unknown>;
+  settings?: {
+    dateRange?: { backtest?: FromTo; trade?: FromTo };
+    [key: string]: unknown;
+  };
   trades: TradeReport[];
-  history: Record<string, unknown>;
-  performance: Record<string, PerfReport | number | undefined>;
+  history: {
+    buyHold?: number[];
+    buyHoldPercent?: number[];
+    drawDown?: number[];
+    drawDownPercent?: number[];
+    equity?: number[];
+    equityPercent?: number[];
+    [key: string]: unknown;
+  };
+  performance: {
+    all?: PerfReport;
+    long?: PerfReport;
+    short?: PerfReport;
+    buyHoldReturn?: number;
+    buyHoldReturnPercent?: number;
+    maxDrawDown?: number;
+    maxDrawDownPercent?: number;
+    openPL?: number;
+    openPLPercent?: number;
+    sharpeRatio?: number;
+    sortinoRatio?: number;
+    [key: string]: PerfReport | number | undefined;
+  };
 }
 
 export type UpdateChangeType = 'plots' | 'report.currency' | 'report.settings'

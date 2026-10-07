@@ -47,6 +47,17 @@ export type {
 } from './transport/types';
 export type * from './chart/graphicParser';
 
+/* eslint-disable no-shadow */
+declare namespace TradingView {
+  type Client = InstanceType<typeof import('./client').default>;
+  type PineIndicator = InstanceType<typeof import('./classes/PineIndicator').default>;
+  type BuiltInIndicator = InstanceType<typeof import('./classes/BuiltInIndicator').default>;
+  type PinePermManager = InstanceType<typeof import('./classes/PinePermManager').default>;
+}
+/* eslint-enable no-shadow */
+
+// TypeScript merges this value with the namespace above.
+// eslint-disable-next-line no-redeclare
 const TradingView = {
   ...http,
   Client,

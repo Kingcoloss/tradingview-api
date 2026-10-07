@@ -1,6 +1,8 @@
 import { describe, it, expect } from '../utils';
 import { createFakeTransport } from '../fake-transport';
 
+const BuiltInIndicator = require('../../src/classes/BuiltInIndicator').default;
+
 const Client = require('../../src/client').default;
 
 describe('fake-socket routing', () => {
@@ -53,12 +55,18 @@ describe('fake-socket routing', () => {
     const chart = new client.Session.Chart();
     const symbolLoaded: unknown[] = [];
     chart.onSymbolLoaded(() => symbolLoaded.push(true));
+    const study = new chart.Study(new BuiltInIndicator('Volume@tv-basicstudies-241'));
+    let studyReady = 0;
+    study.onReady(() => { studyReady += 1; });
 
-    // A packet with the same shape as symbol_resolved but a study id in data[1]
-    // must not be mistaken for the chart session id.
-    const body = JSON.stringify({ m: 'symbol_resolved', p: ['st_NOTCS', 'ser_1', {}] });
-    fake.deliver(`~m~${body.length}~m~${body}`);
+    const createFrame = fake.sent.find((f) => f.includes('create_study')) as string;
+    const [, csID, studyID] = /"p":\["(cs_[A-Za-z0-9]+)","(st_[A-Za-z0-9]+)"/.exec(createFrame) as RegExpExecArray;
+    const studyBody = JSON.stringify({ m: 'study_completed', p: [csID, studyID] });
+    fake.deliver(`~m~${studyBody.length}~m~${studyBody}`);
+    const symbolBody = JSON.stringify({ m: 'symbol_resolved', p: [csID, studyID, {}] });
+    fake.deliver(`~m~${symbolBody.length}~m~${symbolBody}`);
 
+    expect(studyReady).toBe(1);
     expect(symbolLoaded.length).toBe(0);
   });
 });

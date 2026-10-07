@@ -27,6 +27,7 @@ const classNames = ['Client', 'PineIndicator', 'BuiltInIndicator', 'PinePermMana
 
 type ConsumerResult = {
   resolved: string;
+  apiContract: boolean;
   httpFunctions: string[];
   classes: string[];
   clientConstructible: boolean;
@@ -54,6 +55,7 @@ async function runConsumer(command: string[], expectedPath: string) {
   const result = await run(command, tempDir);
   expect(result.exitCode).toBe(0);
   const output = JSON.parse(result.stdout) as ConsumerResult;
+  expect(output.apiContract).toBe(true);
   expect(output.httpFunctions).toEqual(httpFunctionNames);
   expect(output.classes).toEqual(classNames);
   expect(output.clientConstructible).toBe(true);
@@ -97,7 +99,7 @@ describe('packed package runtime routes', () => {
       || name.startsWith('package/dist/')
     ))).toBe(true);
     expect(entries).not.toContain('package/main.js');
-    for (const name of ['consumer-bun-esm.mjs', 'consumer-bun-cjs.cjs', 'consumer-node-esm.mjs', 'consumer-node-cjs.cjs']) {
+    for (const name of ['api-contract.cjs', 'consumer-bun-esm.mjs', 'consumer-bun-cjs.cjs', 'consumer-node-esm.mjs', 'consumer-node-cjs.cjs']) {
       await cp(join(packageRoot, 'tests/pack', name), join(tempDir, name));
     }
     await writeFile(join(tempDir, 'package.json'), JSON.stringify({
