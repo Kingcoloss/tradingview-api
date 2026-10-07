@@ -69,11 +69,26 @@ Version 4.0 requires installing peer dependencies explicitly and supports Bun â‰
 
 ## Installation
 
-For the latest repository version instead of the npm release, install from GitHub and add the runtime's peer dependencies listed above:
+Stable release from npm:
 
 ```bash
-npm install github:Mathieu2301/TradingView-API
+npm install @mathieuc/tradingview
+# or
+bun add @mathieuc/tradingview
 ```
+
+### Installing from GitHub (unreleased changes)
+
+The published tarball ships prebuilt artifacts in `dist/`, but the GitHub repository does not because `dist/` is git-ignored. To consume the latest commit directly, clone and build it yourself:
+
+```bash
+git clone https://github.com/Mathieu2301/TradingView-API.git
+cd TradingView-API
+bun install
+bun run build:all
+```
+
+Then link it into your project (`npm link`, `bun link`, or a local path dependency). Install the runtime peer dependencies listed in [Prerequisites](#prerequisites) in your consumer project.
 
 ## Examples
 
