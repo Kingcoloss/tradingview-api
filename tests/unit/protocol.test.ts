@@ -25,7 +25,7 @@ describe('protocol', () => {
   it('parseWSPacket splits framed JSON and heartbeat packets', () => {
     const body = JSON.stringify({ m: 'quote_completed', p: ['qs_abc', 'key'] });
     const frame = `~m~${body.length}~m~${body}~m~4~m~~h~1`;
-    expect(parseWSPacket(frame)).toEqual([
+    expect(parseWSPacket(frame) as unknown).toEqual([
       { m: 'quote_completed', p: ['qs_abc', 'key'] },
       1,
     ]);

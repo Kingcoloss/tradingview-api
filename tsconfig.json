@@ -15,6 +15,6 @@
     "checkJs": false,
     "types": ["bun-types", "node"]
   },
-  "include": ["src/**/*.ts", "main.js", "tests/types/source-namespace.fixture.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }

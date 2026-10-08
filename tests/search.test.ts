@@ -28,7 +28,7 @@ describe('Search functions', () => {
 });
 
 describe('Technical Analysis', () => {
-  const SEARCHES = {
+  const SEARCHES: Record<string, string> = {
     // search text: expected first result
     'binance:BTCUSD': 'BINANCE:BTCUSD',
     'nasdaq apple': 'NASDAQ:AAPL',
@@ -44,7 +44,7 @@ describe('Technical Analysis', () => {
       expect(firstResult).toBeDefined();
       expect(firstResult.id).toBe(SEARCHES[marketName]);
 
-      const ta = await firstResult.getTA();
+      const ta = await firstResult.getTA() as unknown as Record<string, Record<string, unknown>>;
       expect(ta).toBeDefined();
 
       for (const period of ['1', '5', '15', '60', '240', '1D', '1W', '1M']) {

@@ -20,7 +20,7 @@ describe('ChartStudy validation', () => {
     const client = new Client({ transport: fake.factory });
     fake.open();
     const chart = new client.Session.Chart();
-    const study = new chart.Study(new BuiltInIndicator('RSI'));
+    const study = new chart.Study(new BuiltInIndicator('Volume@tv-basicstudies-241'));
     expect(() => study.setIndicator({} as BuiltInIndicator)).toThrow(invalidIndicatorMessage);
   });
 });

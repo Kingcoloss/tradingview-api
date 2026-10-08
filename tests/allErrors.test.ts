@@ -181,7 +181,7 @@ describe('AllErrors', () => {
     const error = await waitForError(Supertrend);
     console.log('=> Study error:', error);
 
-    expect(error).toEqual([
+    const expectedError: unknown[] = [
       {
         ctx: {
           argName: 'factor',
@@ -195,14 +195,13 @@ describe('AllErrors', () => {
         stack_trace: [{ n: '#main', p: 7 }],
       },
       'undefined',
-    ]);
+    ];
+    expect(error as unknown).toEqual(expectedError);
 
     console.log('OK');
   });
 
-  it.skipIf(
-    !token || !signature,
-  ).skip('throws an error when getting user data without signature', async () => {
+  it.skip('throws an error when getting user data without signature', async () => {
     console.log('Testing "Wrong or expired sessionid/signature" error using getUser method:');
 
     console.log('Trying with signaure');
@@ -230,9 +229,7 @@ describe('AllErrors', () => {
     console.log('OK');
   });
 
-  it.skipIf(
-    !token || !signature,
-  ).skip('throws an error when creating an authenticated client without signature', async () => {
+  it.skip('throws an error when creating an authenticated client without signature', async () => {
     console.log('Testing "Wrong or expired sessionid/signature" error using client:');
 
     const client = new TradingView.Client({ token });

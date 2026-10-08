@@ -20,7 +20,7 @@ describe('PinePermManager', () => {
     try {
       const manager = new PinePermManager('session', 'signature', 'PUB;ABC');
       const expiration = new Date('2026-10-01T00:00:00.000Z');
-      expect(await manager.getUsers(2, 'created')).toEqual(['user']);
+      expect(await manager.getUsers(2, 'created') as unknown).toEqual(['user']);
       expect(await manager.addUser('alice', expiration)).toBe('ok');
       expect(await manager.modifyExpiration('alice')).toBe('ok');
       expect(await manager.removeUser('alice')).toBe('ok');

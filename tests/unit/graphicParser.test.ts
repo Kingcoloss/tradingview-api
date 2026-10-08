@@ -90,7 +90,7 @@ describe('graphicParser', () => {
 
     const out = graphicParse(raw, [1234, 5678]);
 
-    expect(out.labels[0]).toEqual({
+    expect(out.labels[0] as unknown).toEqual({
       id: 1,
       x: 1234,
       y: 10,
@@ -114,7 +114,7 @@ describe('graphicParser', () => {
       color: 13,
       width: 2,
     });
-    expect(out.boxes[0]).toEqual({
+    expect(out.boxes[0] as unknown).toEqual({
       id: 3,
       x1: 1234,
       y1: 30,
@@ -227,15 +227,16 @@ describe('graphicParser', () => {
     };
 
     const out = graphicParse(raw, [1234]);
-    expect(out.labels.slice(0, -1).map(({ yLoc: value }) => value))
+    expect(out.labels.slice(0, -1).map(({ yLoc: value }) => value) as unknown)
       .toEqual(Object.values(yLoc).concat(Object.values(yLoc), Object.values(yLoc),
         Object.values(yLoc), Object.values(yLoc), Object.values(yLoc), ['price', 'abovebar']));
-    expect(out.labels.slice(0, -1).map(({ style }) => style)).toEqual(Object.values(labelStyle));
+    expect(out.labels.slice(0, -1).map(({ style }) => style) as unknown)
+      .toEqual(Object.values(labelStyle));
     expect(out.labels.at(-1)).toMatchObject({ yLoc: 'custom-y', style: 'custom-style' });
     expect(out.lines.map(({ extend: value }) => value))
       .toEqual(['right', 'left', 'both', 'none', 'right', 'left']);
-    expect(out.lines.map(({ style }) => style)).toEqual(Object.values(lineStyle));
-    expect(out.boxes.map(({ style }) => style)).toEqual(Object.values(boxStyle));
+    expect(out.lines.map(({ style }) => style) as unknown).toEqual(Object.values(lineStyle));
+    expect(out.boxes.map(({ style }) => style) as unknown).toEqual(Object.values(boxStyle));
   });
 
   it('returns empty graphic lists by default', () => {

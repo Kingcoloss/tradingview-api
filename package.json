@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:consumer": "tsc -p tests/types/tsconfig.json",
     "lint": "eslint . --ext .js,.ts",
+    "check:credentials": "bun scripts/check-credentials.mjs",
     "prepublishOnly": "bun run build:all"
   },
   "repository": {

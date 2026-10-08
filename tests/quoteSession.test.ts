@@ -30,7 +30,7 @@ describe('Quote session', () => {
 
   it('data has all properties', () => {
     expect(new Promise((resolve) => {
-      BTC.onData((data) => {
+      BTC.onData((data: Record<string, unknown>) => {
         const rsKeys = Object.keys(data);
         console.log('BTCEUR data received');
         if (rsKeys.length <= 2) return;

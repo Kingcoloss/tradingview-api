@@ -59,7 +59,7 @@ describe.skipIf(!token || !signature)('Authenticated actions', () => {
     const testedIndicators = userIndicators.slice(0, 3);
 
     const checked = new Set();
-    async function check(item) {
+    async function check(item: unknown) {
       checked.add(item);
       console.log('Checked:', [...checked], `(${checked.size}/${testedIndicators.length + 1})`);
     }
